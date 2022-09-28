@@ -4,7 +4,8 @@ namespace Iwouldrathercode\Cognito;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Iwouldrathercode\Cognito\Commands\CognitoCommand;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
+use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 
 class CognitoServiceProvider extends PackageServiceProvider
 {
@@ -18,8 +19,22 @@ class CognitoServiceProvider extends PackageServiceProvider
         $package
             ->name('cognito')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasRoute('api')
             ->hasMigration('create_cognito_table')
-            ->hasCommand(CognitoCommand::class);
+            ->hasInstallCommand(function(InstallCommand $command) {
+                $command
+                    ->publishConfigFile()
+                    ->publishMigrations();
+            });
+    }
+
+    public function packageRegistered()
+    {
+        $this->app->bind('CognitoClient', function($app) {
+            return new CognitoIdentityProviderClient([
+                'version' => config('cognito.version'),
+                'region' => config('cognito.region'),
+            ]);
+        });
     }
 }

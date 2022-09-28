@@ -11,6 +11,7 @@ class Cognito extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Iwouldrathercode\Cognito\Cognito::class;
+        // return \Iwouldrathercode\Cognito\Cognito::class;
+        return 'CognitoClient';
     }
 }
