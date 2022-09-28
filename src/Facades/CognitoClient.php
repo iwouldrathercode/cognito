@@ -7,11 +7,10 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Iwouldrathercode\Cognito\Cognito
  */
-class Cognito extends Facade
+class CognitoClient extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        // return \Iwouldrathercode\Cognito\Cognito::class;
         return 'CognitoClient';
     }
 }

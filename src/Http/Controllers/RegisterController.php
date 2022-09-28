@@ -14,7 +14,7 @@ class RegisterController
     {
         try {
             $result = CognitoClient::signUp([
-                'ClientId' => config('services.cognito.client_id'),
+                'ClientId' => config('cognito.client_id'),
                 'Username' => $request->username,
                 'Password' => $request->password,
                 'UserAttributes' => [

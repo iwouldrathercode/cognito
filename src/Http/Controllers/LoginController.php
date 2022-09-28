@@ -48,25 +48,25 @@ class LoginController
 
         try {
             $response = CognitoClient::adminInitiateAuth([
-                'AuthFlow' => config('services.cognito.auth_flow'),
-                'ClientId' => config('services.cognito.client_id'),
-                'UserPoolId' => config('services.cognito.user_pool_id'),
+                'AuthFlow' => config('cognito.auth_flow'),
+                'ClientId' => config('cognito.client_id'),
+                'UserPoolId' => config('cognito.user_pool_id'),
                 'AuthParameters' => [
                     'USERNAME' => $request->username,
                     'PASSWORD' => $request->password,
                 ],
             ]);
 
-            if (Auth::attempt($credentials)) {
+            // if (Auth::attempt($credentials)) {
                 $request->merge([
                     'access_token' => $response->get('AuthenticationResult')['AccessToken'],
                     'cognito_data' => $response->toArray()
                 ]);
 
-                $this->saveAccessToken($request);
+                // $this->saveAccessToken($request);
 
                 return $this->sendLoginResponse($request);
-            }
+            // }
 
         } catch (CognitoIdentityProviderException $exception) {
             return throw new CognitoException($exception);

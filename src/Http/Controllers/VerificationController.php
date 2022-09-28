@@ -32,7 +32,7 @@ class VerificationController
     {
         try {
             CognitoClient::confirmSignUp([
-                'ClientId' => config('services.cognito.client_id'),
+                'ClientId' => config('cognito.client_id'),
                 'Username' => $request->username,
                 'ConfirmationCode' => $request->confirmation_code
             ]);
