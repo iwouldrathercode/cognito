@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Iwouldrathercode\Cognito\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class CognitoCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'cognito';
 
     public $description = 'My command';
 
