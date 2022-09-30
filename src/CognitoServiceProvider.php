@@ -2,14 +2,14 @@
 
 namespace Iwouldrathercode\Cognito;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Iwouldrathercode\Cognito\Helpers\CognitoJWT;
 use Spatie\LaravelPackageTools\Package;
-use Iwouldrathercode\Cognito\Guards\CognitoGuard;
 use Iwouldrathercode\Cognito\Commands\SetupCommand;
+use Iwouldrathercode\Cognito\Facades\CognitoClient;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
-use Iwouldrathercode\Cognito\Providers\CognitoUserProvider;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 
 class CognitoServiceProvider extends PackageServiceProvider
@@ -24,7 +24,8 @@ class CognitoServiceProvider extends PackageServiceProvider
         $package
             ->name('cognito')
             ->hasConfigFile()
-            ->hasMigration('create_cognito_table')
+            ->hasRoute('api')
+            ->hasMigration('create_public_keys_table')
             ->hasCommands([
                 SetupCommand::class
             ])
@@ -47,11 +48,21 @@ class CognitoServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
+        Auth::viaRequest('cognito', function (Request $request) {
+            // return User::where('cognito_token', $request->bearerToken())->first();
+            if($request->bearerToken()) {
 
-//        Auth::extend('cognito', function ($app) {
-//            $request = $app->request;
-//            $userProvider = app(CognitoUserProvider::class);
-//            return new CognitoGuard($userProvider, $request);
-//        });
+                $jwt = $request->bearerToken();
+                $region = config('cognito.region');
+                $userPoolId = config('cognito.user_pool_id');
+                return CognitoJWT::verifyToken($jwt, $region, $userPoolId);
+
+                // TODO 3: If valid, get User from users table
+
+                // TODO 4: If invalid, return null
+
+            }
+            return null;
+        });
     }
 }

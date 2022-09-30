@@ -22,6 +22,16 @@ class LoginController
     */
 
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        // $this->middleware('guest')->except('logout');
+    }
+
+    /**
      * Handle a login request to the application.
      *
      * @param  \Iwouldrathercode\Cognito\Http\Requests\SigninRequest $request
@@ -31,8 +41,6 @@ class LoginController
      */
     public function login(SigninRequest $request)
     {
-        dd(request()->user());
-
         try {
 
             $response = CognitoClient::adminInitiateAuth([
