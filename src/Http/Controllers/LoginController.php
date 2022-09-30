@@ -22,16 +22,6 @@ class LoginController
     */
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        // $this->middleware('guest')->except('logout');
-    }
-
-    /**
      * Handle a login request to the application.
      *
      * @param  \Iwouldrathercode\Cognito\Http\Requests\SigninRequest $request
@@ -41,12 +31,10 @@ class LoginController
      */
     public function login(SigninRequest $request)
     {
-        $credentials = [
-            'username' => $request->username,
-            'password' => $request->password
-        ];
+        dd(request()->user());
 
         try {
+
             $response = CognitoClient::adminInitiateAuth([
                 'AuthFlow' => config('cognito.auth_flow'),
                 'ClientId' => config('cognito.client_id'),
@@ -57,16 +45,12 @@ class LoginController
                 ],
             ]);
 
-            // if (Auth::attempt($credentials)) {
-                $request->merge([
-                    'access_token' => $response->get('AuthenticationResult')['AccessToken'],
-                    'cognito_data' => $response->toArray()
-                ]);
+            $request->merge([
+                'access_token' => $response->get('AuthenticationResult')['AccessToken'],
+                'cognito_data' => $response->toArray()
+            ]);
 
-                // $this->saveAccessToken($request);
-
-                return $this->sendLoginResponse($request);
-            // }
+            return $this->sendLoginResponse($request);
 
         } catch (CognitoIdentityProviderException $exception) {
             return throw new CognitoException($exception);
@@ -89,23 +73,12 @@ class LoginController
     }
 
     /**
-     * @param SigninRequest $request
-     * @return void
-     */
-    public function saveAccessToken(SigninRequest $request): void
-    {
-        $user = $request->user();
-        $user->cognito_token = $request->access_token;
-        $user->save();
-    }
-
-    /**
      * The user has been authenticated.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  mixed  $user
      * @return mixed
-     * 
+     *
      * @throws \Iwouldrathercode\Cognito\Exceptions\CognitoException
      */
     protected function authenticated(Request $request)
