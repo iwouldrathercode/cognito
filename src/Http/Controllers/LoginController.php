@@ -2,8 +2,8 @@
 
 namespace Iwouldrathercode\Cognito\Http\Controllers;
 
+use App\Models\User as User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Iwouldrathercode\Cognito\Facades\CognitoClient;
 use Iwouldrathercode\Cognito\Http\Requests\SigninRequest;
 use Iwouldrathercode\Cognito\Exceptions\CognitoException;
@@ -20,15 +20,16 @@ class LoginController
     | respond with authenticated user data as json output.
     |
     */
+    private User $user;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user)
     {
-        // $this->middleware('guest')->except('logout');
+        $this->user = $user;
     }
 
     /**
@@ -53,31 +54,20 @@ class LoginController
                 ],
             ]);
 
-            $request->merge([
-                'access_token' => $response->get('AuthenticationResult')['AccessToken'],
-                'cognito_data' => $response->toArray()
+            $userResponse = CognitoClient::getUser([
+                'AccessToken' => $response->get('AuthenticationResult')['AccessToken']
             ]);
 
-            return $this->sendLoginResponse($request);
+
+            return response()->json(['data' => [
+                    'user' => $this->user->where('username', $userResponse->get('Username'))->first(),
+                    'cognito_data' => $response->toArray(),
+                ]
+            ]);
 
         } catch (CognitoIdentityProviderException $exception) {
             return throw new CognitoException($exception);
         }
-    }
-
-    /**
-     * Send the response after the user was authenticated.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function sendLoginResponse(Request $request)
-    {
-        return response()->json(['data' => [
-                'user' => $request->user(),
-                'cognito_data' => $request->cognito_data
-            ]
-        ]);
     }
 
     /**

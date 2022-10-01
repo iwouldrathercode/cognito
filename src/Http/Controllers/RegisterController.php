@@ -32,7 +32,7 @@ class RegisterController
             $user = new User;
             $user->username = $request->username;
             $user->email = $request->email;
-            $user->password = bcrypt($request->password);
+            $user->sub = $result->get('UserSub');
             $user->save();
 
         } catch (CognitoIdentityProviderException $exception) {

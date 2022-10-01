@@ -76,6 +76,7 @@ class CognitoServiceProvider extends PackageServiceProvider
                     return null;
                 }
 
+                // TODO: SHould not be first or create should be where first
                 return User::firstOrCreate(
                     ['sub' => $token->getClaim('sub')],
                     [

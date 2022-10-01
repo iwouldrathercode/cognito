@@ -34,7 +34,7 @@ class CognitoException extends Exception
      * Render the exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request
-     * 
+     *
      */
     public function render($request)
     {

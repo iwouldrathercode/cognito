@@ -3,6 +3,7 @@
 namespace Iwouldrathercode\Cognito\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
 class SetupCommand extends Command
@@ -13,8 +14,7 @@ class SetupCommand extends Command
 
     public function handle(): int
     {
-
-        Config::set('auth.defaults.guard', 'api');
+        exec("composer require doctrine/dbal");
 
 
         // $choicePrompt = 'This command will modify project files, which approach would you want to take?';

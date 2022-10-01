@@ -37,10 +37,6 @@ class VerificationController
                 'ConfirmationCode' => $request->confirmation_code
             ]);
 
-            $user = $request->user();
-            $user->email_verified_at = now();
-            $user->save();
-
         } catch (CognitoIdentityProviderException $exception) {
             return throw new CognitoException($exception);
         }
