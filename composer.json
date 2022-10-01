@@ -18,11 +18,9 @@
     "require": {
         "php": "^8.1",
         "aws/aws-sdk-php": "^3.235",
-        "firebase/php-jwt": "v6.3.0",
         "illuminate/contracts": "^9.0",
-        "paragonie/sodium_compat": "^1.19",
-        "phpseclib/phpseclib": "^2.0",
-        "spatie/laravel-package-tools": "^1.13.0"
+        "spatie/laravel-package-tools": "^1.13.0",
+        "teamgantt/juhwit": "^4.0"
     },
     "require-dev": {
         "laravel/pint": "^1.0",

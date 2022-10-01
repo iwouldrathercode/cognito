@@ -2,12 +2,15 @@
 
 namespace Iwouldrathercode\Cognito;
 
+use App\Models\User as User;
 use Illuminate\Http\Request;
+use TeamGantt\Juhwit\JwtDecoder;
 use Illuminate\Support\Facades\Auth;
-use Iwouldrathercode\Cognito\Helpers\CognitoJWT;
+use TeamGantt\Juhwit\Models\UserPool;
 use Spatie\LaravelPackageTools\Package;
+use Illuminate\Support\Facades\Storage;
+use TeamGantt\Juhwit\CognitoClaimVerifier;
 use Iwouldrathercode\Cognito\Commands\SetupCommand;
-use Iwouldrathercode\Cognito\Facades\CognitoClient;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
@@ -25,7 +28,7 @@ class CognitoServiceProvider extends PackageServiceProvider
             ->name('cognito')
             ->hasConfigFile()
             ->hasRoute('api')
-            ->hasMigration('create_public_keys_table')
+            ->hasMigration('modify_users_table')
             ->hasCommands([
                 SetupCommand::class
             ])
@@ -52,14 +55,39 @@ class CognitoServiceProvider extends PackageServiceProvider
             // return User::where('cognito_token', $request->bearerToken())->first();
             if($request->bearerToken()) {
 
-                $jwt = $request->bearerToken();
+                $bearerToken = $request->bearerToken();
+
+                $poolId = config('cognito.user_pool_id');
+                $clientIds = config(('cognito.client_id'));
                 $region = config('cognito.region');
-                $userPoolId = config('cognito.user_pool_id');
-                return CognitoJWT::verifyToken($jwt, $region, $userPoolId);
 
-                // TODO 3: If valid, get User from users table
+                $contents = file_get_contents('https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_3zlQeFyA7/.well-known/jwks.json');
+                Storage::disk('public')->put('jwks.json', $contents);
 
-                // TODO 4: If invalid, return null
+                // we need some public keys in the form of a jwk (accessible via cognito)
+                $jwk = json_decode(file_get_contents(public_path('storage/jwks.json')), true);
+
+                $pool = new UserPool($poolId, $clientIds, $region, $jwk);
+                $verifier = new CognitoClaimVerifier($pool);
+                $decoder = new JwtDecoder($verifier);
+
+                $token = $decoder->decode($bearerToken);
+                if(empty($token)) {
+                    return null;
+                }
+
+                return User::firstOrCreate(
+                    ['sub' => $token->getClaim('sub')],
+                    [
+                        'username' => $token->getClaim('username'),
+                        'event_id' => $token->getClaim('event_id'),
+                        'scope' => $token->getClaim('scope'),
+                        'auth_time' => $token->getClaim('auth_time'),
+                        'exp' => $token->getClaim('exp'),
+                        'iat' => $token->getClaim('iat'),
+                        'jti' => $token->getClaim('jti')
+                    ]
+                );
 
             }
             return null;
