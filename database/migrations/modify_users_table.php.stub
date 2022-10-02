@@ -10,20 +10,14 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
+                'name',
                 'password',
                 'remember_token',
                 'email_verified_at'
             ]);
-            $table->string('name')->nullable()->change();
             $table->string('email')->nullable()->change();
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->text('sub')->nullable();
-            $table->text('event_id')->nullable();
-            $table->text('scope')->nullable();
-            $table->integer('auth_time')->nullable();
-            $table->integer('exp')->nullable();
-            $table->integer('iat')->nullable();
-            $table->text('jti')->nullable();
         });
     }
 };

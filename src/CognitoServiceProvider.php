@@ -61,7 +61,7 @@ class CognitoServiceProvider extends PackageServiceProvider
                 $clientIds = config(('cognito.client_id'));
                 $region = config('cognito.region');
 
-                $contents = file_get_contents('https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_3zlQeFyA7/.well-known/jwks.json');
+                $contents = file_get_contents('https://cognito-idp.'.$region.'.amazonaws.com/'.$poolId.'/.well-known/jwks.json');
                 Storage::disk('public')->put('jwks.json', $contents);
 
                 // we need some public keys in the form of a jwk (accessible via cognito)
@@ -76,19 +76,7 @@ class CognitoServiceProvider extends PackageServiceProvider
                     return null;
                 }
 
-                // TODO: SHould not be first or create should be where first
-                return User::firstOrCreate(
-                    ['sub' => $token->getClaim('sub')],
-                    [
-                        'username' => $token->getClaim('username'),
-                        'event_id' => $token->getClaim('event_id'),
-                        'scope' => $token->getClaim('scope'),
-                        'auth_time' => $token->getClaim('auth_time'),
-                        'exp' => $token->getClaim('exp'),
-                        'iat' => $token->getClaim('iat'),
-                        'jti' => $token->getClaim('jti')
-                    ]
-                );
+                return User::where('username', $token->getClaim('username'))->first();
 
             }
             return null;

@@ -58,7 +58,6 @@ class LoginController
                 'AccessToken' => $response->get('AuthenticationResult')['AccessToken']
             ]);
 
-
             return response()->json(['data' => [
                     'user' => $this->user->where('username', $userResponse->get('Username'))->first(),
                     'cognito_data' => $response->toArray(),
