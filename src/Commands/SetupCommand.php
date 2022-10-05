@@ -2,9 +2,8 @@
 
 namespace Iwouldrathercode\Cognito\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 
 class SetupCommand extends Command
 {
@@ -12,57 +11,36 @@ class SetupCommand extends Command
 
     public $description = 'Modify project files to allow api authentication only using amazon cognito';
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
-        exec("composer require doctrine/dbal");
+        
+        $this->installDoctrineDBAL();
 
-
-        // $choicePrompt = 'This command will modify project files, which approach would you want to take?';
-        // $choiceOptions = [
-        //     'Prompt for confirmation while modifying each file',
-        //     'Allow package to modify project files without further prompts'
-        // ];
-        // $choiceDefault = 0;
-        // $allowMultipleSelections = false;
-        // $choice = $this->choice($choicePrompt, $choiceOptions, $choiceDefault, $allowMultipleSelections);
-
-        // if($choice) {
-
-        //     if ($this->confirm('Modify routes/web.php by updating the "/" - landing page route ?', true)) {
-        //         $this->modifyLandingWebRoute();
-        //     }
-
-        //     if ($this->confirm('Modify routes/web.php by adding unauthenticated route ?', true)) {
-        //         $this->addUnauthenticatedWebRoute();
-        //     }
-
-        //     if ($this->confirm('Modify routes/web.php by redirecting all web routes to 404 (to allow API only routes) ?', true)) {
-        //         $this->redirectNonAPIRoutes();
-        //     }
-
-        // } else {
-
-        //     $this->modifyLandingWebRoute();
-        //     $this->addUnauthenticatedWebRoute();
-        //     $this->redirectNonAPIRoutes();
-
-        // }
+        $this->linkStorageToPublicFolder();
 
         return self::SUCCESS;
     }
 
-    protected function modifyLandingWebRoute()
+    protected function installDoctrineDBAL()
     {
-
+        try {
+            exec("composer require doctrine/dbal");
+        } catch (Exception $exception) {
+            $this->comment("doctrine/dbal package is used to make DB table changes. Ensure you are not ");
+        }
     }
 
-    protected function addUnauthenticatedWebRoute()
+    protected function linkStorageToPublicFolder()
     {
-
-    }
-
-    protected function redirectNonAPIRoutes()
-    {
-
+        try {
+            $this->call("storage:link");
+        } catch (Exception $exception) {
+            $this->comment("Storage is already linked!, nothing to do.");
+        }
     }
 }

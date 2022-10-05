@@ -14,8 +14,6 @@ use Iwouldrathercode\Cognito\Commands\SetupCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
-use Illuminate\Contracts\Container\BindingResolutionException;
-
 class CognitoServiceProvider extends PackageServiceProvider
 {
     /**
