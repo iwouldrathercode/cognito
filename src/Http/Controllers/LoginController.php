@@ -70,28 +70,6 @@ class LoginController
     }
 
     /**
-     * The user has been authenticated.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return mixed
-     *
-     * @throws \Iwouldrathercode\Cognito\Exceptions\CognitoException
-     */
-    protected function authenticated(Request $request)
-    {
-        try {
-            $response = CognitoClient::getUser([
-                'AccessToken' => $request->access_token
-            ]);
-        } catch (CognitoIdentityProviderException $exception) {
-            return throw new CognitoException($exception);
-        }
-
-        return response()->json(['data' => $response], 200);
-    }
-
-    /**
      * Log the user out of the application.
      *
      * @param  \Illuminate\Http\Request  $request

@@ -1,6 +1,5 @@
 <?php
 
-// config for Iwouldrathercode/Cognito
 return [
 
     'version' => '2016-04-18',
@@ -11,5 +10,8 @@ return [
     
     'user_pool_id' => env('AWS_COGNITO_USER_POOL_ID'),
     
-    'region' => env('AWS_DEFAULT_REGION', 'us-east-1')
+    'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+
+    'jwk_idp_url' => 'https://cognito-idp.'.env('AWS_DEFAULT_REGION', 'us-east-1').'.amazonaws.com/'.env('AWS_COGNITO_USER_POOL_ID').'/.well-known/jwks.json'
+    
 ];

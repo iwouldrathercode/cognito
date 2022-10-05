@@ -3,23 +3,12 @@
 namespace Iwouldrathercode\Cognito\Http\Controllers;
 
 use App\Facades\CognitoClient;
-use Iwouldrathercode\Cognito\Http\Requests\AccountConfirmationRequest;
 use Iwouldrathercode\Cognito\Exceptions\CognitoException;
+use Iwouldrathercode\Cognito\Http\Requests\AccountConfirmationRequest;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 
-class VerificationController
+class EmailVerificationController
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Email Verification Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling email verification for any
-    | user that recently registered with the application. Emails may also
-    | be re-sent if the user didn't receive the original email message.
-    |
-    */
-
     /**
      * Mark the authenticated user's email address as verified.
      *

@@ -19,5 +19,7 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->text('sub')->nullable();
         });
+
+        Schema::dropIfExists('password_resets');
     }
 };

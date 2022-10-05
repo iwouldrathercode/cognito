@@ -14,12 +14,18 @@ use Iwouldrathercode\Cognito\Commands\SetupCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class CognitoServiceProvider extends PackageServiceProvider
 {
+    /**
+     * 
+     * @param Package $package 
+     * @return void 
+     */
     public function configurePackage(Package $package): void
     {
-        /*
+        /**
          * This class is a Package Service Provider
          *
          * More info: https://github.com/spatie/laravel-package-tools
@@ -39,6 +45,11 @@ class CognitoServiceProvider extends PackageServiceProvider
             });
     }
 
+    /**
+     * Will be called after this service provider is registered
+     * 
+     * @return void 
+     */
     public function packageRegistered()
     {
         $this->app->bind('CognitoClient', function($app) {
@@ -49,37 +60,77 @@ class CognitoServiceProvider extends PackageServiceProvider
         });
     }
 
+    /**
+     * Uses the viaRequest method to validate bearer token and returns App\Models\User object
+     * 
+     * @return void 
+     */
     public function packageBooted()
     {
         Auth::viaRequest('cognito', function (Request $request) {
-            // return User::where('cognito_token', $request->bearerToken())->first();
             if($request->bearerToken()) {
 
                 $bearerToken = $request->bearerToken();
-
                 $poolId = config('cognito.user_pool_id');
                 $clientIds = config(('cognito.client_id'));
                 $region = config('cognito.region');
+                
+                $this->downloadCognitoIDPJWK($poolId, $region);
 
-                $contents = file_get_contents('https://cognito-idp.'.$region.'.amazonaws.com/'.$poolId.'/.well-known/jwks.json');
-                Storage::disk('public')->put('jwks.json', $contents);
+                $token = $this->decodeJWK($poolId, $region, $clientIds, $bearerToken);
 
-                // we need some public keys in the form of a jwk (accessible via cognito)
-                $jwk = json_decode(file_get_contents(public_path('storage/jwks.json')), true);
-
-                $pool = new UserPool($poolId, $clientIds, $region, $jwk);
-                $verifier = new CognitoClaimVerifier($pool);
-                $decoder = new JwtDecoder($verifier);
-
-                $token = $decoder->decode($bearerToken);
                 if(empty($token)) {
                     return null;
                 }
 
-                return User::where('username', $token->getClaim('username'))->first();
+                return $this->resolveUser($token->getClaim('username'));
 
             }
             return null;
         });
+    }
+
+    /**
+     * Downloads the Cognito IDP JWK and stores inside public/storage folder
+     * 
+     * @param mixed $poolId 
+     * @param mixed $region 
+     * @return void 
+     */
+    public function downloadCognitoIDPJWK($poolId, $region)
+    {
+        $contents = file_get_contents( config('cognito.jwk_idp_url') );
+        Storage::disk('public')->put('jwks.json', $contents);
+    }
+
+    /**
+     * Uses the public/storage/jwks.json to decode with bearer token 
+     * and returns token response
+     * 
+     * @param mixed $poolId 
+     * @param mixed $region 
+     * @param mixed $clientIds 
+     * @param mixed $bearerToken 
+     * @return mixed 
+     * @throws Exception 
+     */
+    public function decodeJWK($poolId, $region, $clientIds, $bearerToken)
+    {
+        $jwk = json_decode(file_get_contents(public_path('storage/jwks.json')), true);
+        $pool = new UserPool($poolId, $clientIds, $region, $jwk);
+        $verifier = new CognitoClaimVerifier($pool);
+        $decoder = new JwtDecoder($verifier);
+        return $decoder->decode($bearerToken);
+    }
+
+    /**
+     * Returns the matching App\Models\User object based on the username
+     * 
+     * @param mixed $username 
+     * @return mixed 
+     */
+    public function resolveUser($username)
+    {
+        return User::where('username', $username)->first();
     }
 }
