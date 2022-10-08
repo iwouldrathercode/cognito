@@ -91,7 +91,6 @@ composer test
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 ## Credits
 - [Shankar](https://github.com/psgganesh)
-- [All Contributors](../../contributors)
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
