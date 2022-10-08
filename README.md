@@ -7,78 +7,91 @@
 
 This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
-## Support us
+## Installation & Setup
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/cognito.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/cognito)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
-## Installation
-
+### Step 1
 You can install the package via composer:
-
 ```bash
 composer require iwouldrathercode/cognito
 ```
-
-You can publish and run the migrations with:
-
+### Step 2
+Run the setup command to install dependencies and link the storage folder to public folder
 ```bash
-php artisan vendor:publish --tag="cognito-migrations"
+php artisan cognito:setup
+```
+### Step 3
+Run the install command to publish the config files and migrations
+```bash
+php artisan cognito:install
+```
+### Step 4
+Execute the migrations. This will update the users table and since passwords are no longer managed by laravel, this will also delete the password_resets table
+```bash
 php artisan migrate
 ```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="cognito-config"
-```
-
-This is the contents of the published config file:
-
+### Step 5
+Update the config/auth.php with default guard as `api`
 ```php
-return [
-];
+    ..
+    ..
+
+    'defaults' => [
+        'guard' => 'api',
+        'passwords' => 'users',
+    ],
+    ..
+    ..
 ```
+### Step 6
+Update the config/auth.php, guards array with config of `api` using 'cognito' as driver
+```php
+    ..
+    ..
+    'guards' => [
+        ..
+        ..
 
-Optionally, you can publish the views using
-
+        'api' => [
+            'driver' => 'cognito',
+            'provider' => 'users'
+        ]
+    ],
+    ..
+    ..
+```
+### Step 7
+Ensure the env variables of the cognito UserPool and ClientID are at .env this will affect `congig/cognito.php` config file
 ```bash
-php artisan vendor:publish --tag="cognito-views"
+AWS_COGNITO_USER_POOL_ID=
+AWS_COGNITO_CLIENT_ID=
+AWS_DEFAULT_REGION=
 ```
-
 ## Usage
-
+This package will create /api routes to manage authentication
 ```php
-$cognito = new Iwouldrathercode\Cognito();
-echo $cognito->echoPhrase('Hello, Iwouldrathercode!');
+POST -> api/confirm-forgot-password -> confirm-forgot-password › 
+Iwouldrathercode\Cognito\Http\Controllers\SelfServiceController@confirmForgotPassword
+
+POST -> api/forgot-password -> forgot-password › Iwouldrathercode\Cognito\Http\Controllers\SelfServiceController@forgotPassword
+
+POST -> api/login -> signin › 
+Iwouldrathercode\Cognito\Http\Controllers\LoginController@login
+
+POST -> api/register -> signup › 
+Iwouldrathercode\Cognito\Http\Controllers\RegisterController@register
+
+POST -> api/verify -> verify › 
+Iwouldrathercode\Cognito\Http\Controllers\EmailVerificationController@verify
 ```
-
 ## Testing
-
 ```bash
 composer test
 ```
-
 ## Changelog
-
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
-
 - [Shankar](https://github.com/psgganesh)
 - [All Contributors](../../contributors)
-
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
