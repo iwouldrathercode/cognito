@@ -11,6 +11,8 @@ Route::group([ 'prefix'=>'api' ],function () {
     
     Route::post('/login',[LoginController::class, 'login'])->name('signin');
 
+    Route::post('/logout',[LoginController::class, 'logout'])->name('signout')->middleware(['auth:api']);
+
     Route::post('/verify',[EmailVerificationController::class, 'verify'])->name('verify');
 
     Route::post('/forgot-password',[SelfServiceController::class, 'forgotPassword'])->name('forgot-password');

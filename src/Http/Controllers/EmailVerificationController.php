@@ -25,7 +25,6 @@ class EmailVerificationController
                 'Username' => $request->username,
                 'ConfirmationCode' => $request->confirmation_code
             ]);
-
         } catch (CognitoIdentityProviderException $exception) {
             return throw new CognitoException($exception);
         }

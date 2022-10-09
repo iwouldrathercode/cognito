@@ -82,6 +82,9 @@ Iwouldrathercode\Cognito\Http\Controllers\RegisterController@register
 
 POST -> api/verify -> verify › 
 Iwouldrathercode\Cognito\Http\Controllers\EmailVerificationController@verify
+
+POST -> api/logout -> signout › 
+Iwouldrathercode\Cognito\Http\Controllers\LoginController@logout
 ```
 ## Testing
 ```bash

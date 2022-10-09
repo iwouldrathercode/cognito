@@ -38,9 +38,10 @@ class CognitoException extends Exception
      */
     public function render($request)
     {
-        return response()->json([
+        $response = [
             "code" => $this->exception->getStatusCode(),
             "message" => $this->exception->getAwsErrorMessage()
-        ], $this->exception->getStatusCode());
+        ];
+        return response($response, $this->exception->getStatusCode());
     }
 }

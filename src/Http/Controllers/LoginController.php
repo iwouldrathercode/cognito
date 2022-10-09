@@ -77,17 +77,13 @@ class LoginController
      */
     public function logout(Request $request)
     {
-        //
-    }
-
-    /**
-     * The user has logged out of the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
-     */
-    protected function loggedOut(Request $request)
-    {
-        //
+        try {
+            $response = CognitoClient::GlobalSignOut([
+                "AccessToken" => $request->bearerToken()
+            ]);
+        } catch (CognitoIdentityProviderException $exception) {
+            return throw new CognitoException($exception);
+        }
+        return response()->json(['data' => $response->toArray()], 200);
     }
 }
