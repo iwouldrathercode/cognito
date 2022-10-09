@@ -2,7 +2,7 @@
 
 namespace Iwouldrathercode\Cognito\Http\Controllers;
 
-use App\Facades\CognitoClient;
+use Iwouldrathercode\Cognito\Facades\CognitoClient;
 use Iwouldrathercode\Cognito\Exceptions\CognitoException;
 use Iwouldrathercode\Cognito\Http\Requests\AccountConfirmationRequest;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;

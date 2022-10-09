@@ -2,8 +2,8 @@
 
 namespace Iwouldrathercode\Cognito\Http\Controllers;
 
-use App\Facades\CognitoClient;
 use Illuminate\Http\JsonResponse;
+use Iwouldrathercode\Cognito\Facades\CognitoClient;
 use Iwouldrathercode\Cognito\Exceptions\CognitoException;
 use Iwouldrathercode\Cognito\Http\Requests\ForgotPasswordRequest;
 use Iwouldrathercode\Cognito\Http\Requests\ConfirmForgotPasswordRequest;
