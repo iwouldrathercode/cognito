@@ -1,11 +1,11 @@
-# Simple laravel package to work with aws-php-sdk and amazon cognito
+# iwouldrathercode/cognito
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/iwouldrathercode/cognito.svg?style=flat-square)](https://packagist.org/packages/iwouldrathercode/cognito)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/iwouldrathercode/cognito/run-tests?label=tests)](https://github.com/iwouldrathercode/cognito/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/iwouldrathercode/cognito/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/iwouldrathercode/cognito/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/iwouldrathercode/cognito.svg?style=flat-square)](https://packagist.org/packages/iwouldrathercode/cognito)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Simple laravel package to work with aws-php-sdk and amazon cognito. Once installed it can generate api routes to work with cognito apis and generate and validate jwt tokens
 
 ## Installation & Setup
 
@@ -86,10 +86,9 @@ Iwouldrathercode\Cognito\Http\Controllers\EmailVerificationController@verify
 POST -> api/logout -> signout › 
 Iwouldrathercode\Cognito\Http\Controllers\LoginController@logout
 ```
-## Testing
-```bash
-composer test
-```
+## TODO
+- Create valid Unit Test cases
+
 ## Changelog
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 ## Credits
